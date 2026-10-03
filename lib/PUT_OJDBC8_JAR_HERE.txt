@@ -1,0 +1,6 @@
+Place ojdbc8.jar here.
+
+Download from:
+  https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html
+
+Choose the version that matches your Oracle Database (19c/21c → ojdbc8.jar).
