@@ -133,9 +133,7 @@ public class ExpenseService {
         if (isDbConnected()) {
             try {
                 List<Category> dbCats = categoryDAO.getAllCategories();
-                if (dbCats != null && !dbCats.isEmpty()) {
-                    return dbCats;
-                }
+                if (dbCats != null) return dbCats;
             } catch (SQLException e) {
                 System.err.println("[ExpenseService] Error fetching categories: " + e.getMessage());
             }
@@ -165,6 +163,52 @@ public class ExpenseService {
         Category cat = new Category(++inMemoryCatCounter, trimmed, "EXPENSE");
         fallbackCategories.add(cat);
         return cat;
+    }
+
+    public Category createCategory(String categoryName, String categoryType) throws SQLException {
+        String name = categoryName.trim();
+        if (isDbConnected()) {
+            int id = categoryDAO.addCategory(name, categoryType);
+            return new Category(id, name, categoryType.toUpperCase());
+        }
+        for (Category category : fallbackCategories) {
+            if (category.getName().equalsIgnoreCase(name)) {
+                throw new IllegalArgumentException("A category with this name already exists.");
+            }
+        }
+        Category category = new Category(++inMemoryCatCounter, name, categoryType.toUpperCase());
+        fallbackCategories.add(category);
+        return category;
+    }
+
+    public boolean updateCategory(Category updated) throws SQLException {
+        if (isDbConnected()) {
+            return categoryDAO.updateCategory(updated.getId(), updated.getName(), updated.getType());
+        }
+        for (Category category : fallbackCategories) {
+            if (category.getId() != updated.getId() && category.getName().equalsIgnoreCase(updated.getName())) {
+                throw new IllegalArgumentException("A category with this name already exists.");
+            }
+        }
+        for (Category category : fallbackCategories) {
+            if (category.getId() == updated.getId()) {
+                category.setName(updated.getName());
+                category.setType(updated.getType());
+                for (Expense expense : inMemoryExpenses) {
+                    if (expense.getCategoryId() == updated.getId()) expense.setCategoryName(updated.getName());
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteCategory(int categoryId) throws SQLException {
+        if (isDbConnected()) return categoryDAO.deleteCategory(categoryId);
+        for (Expense expense : inMemoryExpenses) {
+            if (expense.getCategoryId() == categoryId) return false;
+        }
+        return fallbackCategories.removeIf(category -> category.getId() == categoryId);
     }
 
     public List<PaymentMode> getPaymentModes() {

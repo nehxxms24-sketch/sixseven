@@ -24,6 +24,7 @@ public class MainDashboardFrame extends JFrame {
 
     private DashboardPanel dashboardPanel;
     private TransactionsPanel transactionsPanel;
+    private CategoriesPanel categoriesPanel;
     private TrendsChartPanel trendsChartPanel;
     private DebtManagementPanel debtPanel;
     private DeletedHistoryPanel deletedHistoryPanel;
@@ -57,12 +58,14 @@ public class MainDashboardFrame extends JFrame {
         );
 
         transactionsPanel   = new TransactionsPanel(expenseService, this::refreshAllMetrics);
+        categoriesPanel     = new CategoriesPanel(expenseService);
         trendsChartPanel    = new TrendsChartPanel(expenseService);
         debtPanel           = new DebtManagementPanel(expenseService, this::refreshAllMetrics);
         deletedHistoryPanel = new DeletedHistoryPanel(expenseService, this::refreshAllMetrics);
 
         mainContentPanel.add(dashboardPanel,      "Dashboard");
         mainContentPanel.add(transactionsPanel,   "Transactions");
+        mainContentPanel.add(categoriesPanel,     "Categories");
         mainContentPanel.add(trendsChartPanel,    "Analytics");
         mainContentPanel.add(debtPanel,           "Debts & Loans");  // single canonical card key
         mainContentPanel.add(deletedHistoryPanel, "Trash");
@@ -85,6 +88,7 @@ public class MainDashboardFrame extends JFrame {
         switch (tabName) {
             case "Dashboard"    -> dashboardPanel.refreshData();
             case "Transactions" -> transactionsPanel.refreshTableData();
+            case "Categories"   -> categoriesPanel.refreshCategories();
             case "Analytics"    -> trendsChartPanel.refreshAnalytics();
             case "Debts & Loans", "Debts" -> debtPanel.refreshTableData();
             case "Trash"        -> deletedHistoryPanel.refreshTableData();

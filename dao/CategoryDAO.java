@@ -113,7 +113,7 @@ public class CategoryDAO {
      */
     public List<PaymentMode> getAllPaymentModes() throws SQLException {
         List<PaymentMode> list = new ArrayList<>();
-        String sql = "SELECT mode_id, mode_name FROM PAYMENT_MODES ORDER BY mode_id";
+        String sql = "SELECT payment_mode_id, mode_name FROM PAYMENT_MODES ORDER BY payment_mode_id";
 
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -121,7 +121,7 @@ public class CategoryDAO {
 
             while (rs.next()) {
                 list.add(new PaymentMode(
-                        rs.getInt("mode_id"),
+                        rs.getInt("payment_mode_id"),
                         rs.getString("mode_name")));
             }
         }

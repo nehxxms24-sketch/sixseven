@@ -48,18 +48,46 @@ public class CategoryDAO {
         throw new SQLException("Failed to get generated category_id");
     }
 
+    public boolean updateCategory(int categoryId, String name, String type) throws SQLException {
+        String sql = "UPDATE CATEGORIES SET category_name = ?, category_type = ? WHERE category_id = ?";
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, name.trim());
+            ps.setString(2, type.toUpperCase());
+            ps.setInt(3, categoryId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    /** Deletes only categories that are not referenced by any expense, including trashed expenses. */
+    public boolean deleteCategory(int categoryId) throws SQLException {
+        String referenceSql = "SELECT COUNT(*) FROM EXPENSES WHERE category_id = ?";
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement referencePs = c.prepareStatement(referenceSql)) {
+            referencePs.setInt(1, categoryId);
+            try (ResultSet rs = referencePs.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) return false;
+            }
+            String deleteSql = "DELETE FROM CATEGORIES WHERE category_id = ?";
+            try (PreparedStatement deletePs = c.prepareStatement(deleteSql)) {
+                deletePs.setInt(1, categoryId);
+                return deletePs.executeUpdate() > 0;
+            }
+        }
+    }
+
     // ══════════════════════════════════════════════════════════════════
     //  PAYMENT MODES
     // ══════════════════════════════════════════════════════════════════
 
     public List<PaymentMode> getAllPaymentModes() throws SQLException {
         List<PaymentMode> list = new ArrayList<>();
-        String sql = "SELECT mode_id, mode_name FROM PAYMENT_MODES ORDER BY mode_id";
+        String sql = "SELECT payment_mode_id, mode_name FROM PAYMENT_MODES ORDER BY payment_mode_id";
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new PaymentMode(rs.getInt("mode_id"), rs.getString("mode_name")));
+                list.add(new PaymentMode(rs.getInt("payment_mode_id"), rs.getString("mode_name")));
             }
         }
         return list;

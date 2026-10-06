@@ -1,3 +1,4 @@
+SET DEFINE OFF;
 -- =====================================================================
 --  Personal Expense Manager ("sixseven") – Oracle Schema (v4)
 --  3-Member Academic Submission • Database Layer (Member 1)

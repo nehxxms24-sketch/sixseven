@@ -12,7 +12,7 @@ public class SidebarPanel extends JPanel {
 
     public interface TabChangeListener { void onTabChanged(String tabName); }
 
-    private static final String[] TABS = {"Dashboard", "Transactions", "Analytics", "Debts & Loans", "Trash"};
+    private static final String[] TABS = {"Dashboard", "Transactions", "Categories", "Analytics", "Debts & Loans", "Trash"};
 
     private int selectedTab = 0;
     private TabChangeListener listener;
