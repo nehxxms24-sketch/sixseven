@@ -17,6 +17,7 @@ public class SidebarPanel extends JPanel {
     private int selectedTab = 0;
     private TabChangeListener listener;
     private JButton[] tabButtons;
+    private Runnable logoutAction;
 
     public SidebarPanel() {
         setPreferredSize(new Dimension(200, 0));
@@ -70,6 +71,13 @@ public class SidebarPanel extends JPanel {
         dbLabel.setForeground(AquaTheme.SUCCESS_GREEN);
         footer.add(dbLabel, BorderLayout.SOUTH);
 
+        JButton logoutButton = createTabButton("Logout", TABS.length);
+        logoutButton.setForeground(AquaTheme.DANGER_RED);
+        logoutButton.addActionListener(e -> {
+            if (logoutAction != null) logoutAction.run();
+        });
+        footer.add(logoutButton, BorderLayout.NORTH);
+
         add(header,   BorderLayout.NORTH);
         add(sep,      BorderLayout.CENTER);
         JScrollPane scroll = new JScrollPane(navPanel);
@@ -119,6 +127,7 @@ public class SidebarPanel extends JPanel {
     }
 
     public void setTabChangeListener(TabChangeListener l) { this.listener = l; }
+    public void setLogoutAction(Runnable action) { this.logoutAction = action; }
     public String getSelectedTab() { return TABS[selectedTab]; }
 
     public void selectTabByName(String name) {

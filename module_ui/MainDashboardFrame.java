@@ -44,6 +44,7 @@ public class MainDashboardFrame extends JFrame {
         // ── LEFT SIDEBAR ─────────────────────────────────────────────
         sidebar = new SidebarPanel();
         sidebar.setTabChangeListener(this::switchView);
+        sidebar.setLogoutAction(this::logout);
         root.add(sidebar, BorderLayout.WEST);
 
         // ── CENTER CONTENT (CardLayout) ───────────────────────────────
@@ -79,6 +80,11 @@ public class MainDashboardFrame extends JFrame {
     private void openAddExpenseDialog() {
         AddExpenseDialog dialog = new AddExpenseDialog(this, expenseService, this::refreshAllMetrics);
         dialog.setVisible(true);
+    }
+
+    private void logout() {
+        dispose();
+        SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
     }
 
     private void switchView(String tabName) {
